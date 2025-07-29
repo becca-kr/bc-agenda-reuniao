@@ -1,16 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BookingModal from './BookingModal';
 
-// Tipo para um agendamento individual
+// Tipo para os dados de agendamento
 interface Booking {
   day: string;
   hour: string;
   title: string;
 }
 
-// Tipo para o horário selecionado no clique
+// Tipo para o slot selecionado
 interface SelectedSlot {
   day: string;
   hour: string;
@@ -30,8 +30,26 @@ export default function Calendar() {
   //Estados do componente
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<SelectedSlot | null>(null);
-
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Efeito para buscar agendamentos ao montar o componente
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await fetch('/api/events');
+        const data = await response.json();
+        setBookings(data);
+      } catch (error) {
+        console.error("Falha ao buscar agendamentos:", error);
+        alert("Não foi possível carregar os agendamentos.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBookings();
+  }, []);
+
 
   //Funções de manipulação de eventos
   const handleSlotClick = (day: string, hour: string) => {
@@ -50,22 +68,49 @@ export default function Calendar() {
 
   // Função para confirmar a reserva
   // Aqui você pode adicionar lógica para salvar a reserva, por exemplo, enviando para um servidor
-  const handleConfirmBooking = (title: string) => {
-    if (selectedSlot) {
-      const newBooking: Booking = {
-        ...selectedSlot,
-        title,
-      };
-      // Adiciona o novo agendamento à lista existente
-      setBookings([...bookings, newBooking]);
+  const handleConfirmBooking = async (title: string) => {
+    if (!selectedSlot) return;
+    const newBooking: Booking = { ...selectedSlot, title };
+
+    try {
+      const response = await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'CREATE', payload: newBooking }),
+      });
+      if (!response.ok) throw new Error('Falha ao salvar');
+      
+      setBookings([...bookings, newBooking]); // Atualiza a tela imediatamente
+      handleCloseModal();
+
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao salvar o agendamento. Tente novamente.");
     }
-    handleCloseModal();
   };
+
   // Função para deletar um agendamento
-  const handleDeleteBooking = (day: string, hour: string) => {
-    // Filtra a lista, mantendo apenas os agendamentos que NÃO são o que queremos deletar
-    setBookings(bookings.filter(booking => !(booking.day === day && booking.hour === hour)));
+  const handleDeleteBooking = async (day: string, hour: string) => {
+    if (!confirm("Tem certeza que deseja cancelar esta reunião?")) return;
+
+    try {
+      const response = await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'DELETE', payload: { day, hour } }),
+      });
+      if (!response.ok) throw new Error('Falha ao deletar');
+
+      setBookings(bookings.filter(b => !(b.day === day && b.hour === hour)));
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao cancelar a reunião. Tente novamente.");
+    }
   };
+
+  if (isLoading) {
+    return <div className="text-center p-10">Carregando agenda...</div>;
+  }
 
   return (
     <>
