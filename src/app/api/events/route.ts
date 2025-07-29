@@ -8,6 +8,10 @@ interface Booking {
   title: string;
 }
 
+type RequestBody =
+  | { action: 'CREATE'; payload: Booking }
+  | { action: 'DELETE'; payload: DeletePayload };
+
 // Função GET: Para buscar todos os agendamentos
 export async function GET() {
   try {
@@ -21,22 +25,22 @@ export async function GET() {
 // Função POST: Para criar ou deletar um agendamento
 export async function POST(request: Request) {
   try {
-    const { action, payload } = await request.json();
+    const { action, payload } = (await request.json()) as RequestBody;
+
+    const currentBookings = ((await kv.get('bookings')) as Booking[]) || [];
 
     if (action === 'CREATE') {
-      const currentBookings: any[] = (await kv.get('bookings')) || [];
       const newBookings = [...currentBookings, payload];
       await kv.set('bookings', newBookings);
       return NextResponse.json(payload);
     }
 
     if (action === 'DELETE') {
-      const currentBookings: any[] = (await kv.get('bookings')) || [];
       const newBookings = currentBookings.filter(
-        b => !(b.day === payload.day && b.hour === payload.hour)
+        (b) => !(b.day === payload.day && b.hour === payload.hour)
       );
       await kv.set('bookings', newBookings);
-      return new NextResponse(null, { status: 204 }); // Sucesso, sem conteúdo
+      return new NextResponse(null, { status: 204 });
     }
 
     return new NextResponse('Ação inválida', { status: 400 });
