@@ -41,7 +41,7 @@ export async function POST(request: Request) {
 
     return new NextResponse('Ação inválida', { status: 400 });
 
-  } catch (error) {
+  } catch {
     return new NextResponse('Erro ao salvar agendamento', { status: 500 });
   }
 }

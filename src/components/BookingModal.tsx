@@ -1,6 +1,4 @@
-'use client' ;
-
-import { on } from "events";
+'use client';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -10,7 +8,13 @@ interface BookingModalProps {
   hour: string; // hora selecionada
 }
 
-export default function BookingModal({ isOpen, onClose, onConfirm, day, hour }: BookingModalProps){
+export default function BookingModal({ 
+    isOpen, 
+    onClose, 
+    onConfirm, 
+    day, 
+    hour,
+}: BookingModalProps){
     if (!isOpen) 
         return null;
 
