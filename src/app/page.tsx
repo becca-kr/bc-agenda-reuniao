@@ -18,7 +18,7 @@ export default function Home() {
       </div>
 
       <footer className="text-center text-gray-400 mt-8">
-        <p>Desenvolvido com ❤️</p>
+        <p>Desenvolvido com 🖤 @allbec.tech </p>
       </footer>
     </main>
   );

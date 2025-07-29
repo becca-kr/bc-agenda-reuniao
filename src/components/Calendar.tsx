@@ -117,12 +117,12 @@ export default function Calendar() {
       <div className="grid grid-cols-7 gap-1 text-center">
         <div className="font-bold"></div>
         {days.map((day) => (
-          <div key={day} className="font-bold py-2">{day}</div>
+          <div key={day} className="font-bold py-2 text-gray-400">{day}</div>
         ))}
         {hours.map((hour) => (
           <React.Fragment key={hour}>
-            <div className="font-bold pr-2 text-right">{hour}</div>
-            
+            <div className="font-bold pr-2 text-right text-gray-400">{hour}</div>
+
             {/* LÓGICA DE RENDERIZAÇÃO ATUALIZADA */}
             {days.map((day) => {
               // Procura se existe um agendamento para este dia e hora
@@ -132,19 +132,19 @@ export default function Calendar() {
                 <div key={`${day}-${hour}`}>
                   {booking ? (
                     // Se houver agendamento, mostra o card de evento (azul)
-                    <div className="bg-blue-200 h-16 border border-blue-300 rounded-md p-1 text-left text-sm relative flex flex-col justify-between">
-                      <span className="font-semibold text-blue-900 break-words">{booking.title}</span>
-                      <button 
-                        onClick={() => handleDeleteBooking(booking.day, booking.hour)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs hover:bg-red-700"
-                      >
-                        X
-                      </button>
-                    </div>
+                    <div className="bg-[#151E3D] text-white h-16 border border-transparent rounded-md p-2 text-left text-sm relative flex flex-col justify-center">
+                    <span className="font-semibold break-words leading-tight">{booking.title}</span>
+                    <button 
+                      onClick={() => handleDeleteBooking(booking.day, booking.hour)}
+                      className="absolute top-1 right-1 bg-[#B43D35] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-[#9c342d] transition-colors"
+                    >
+                      X
+                    </button>
+                  </div>
                   ) : (
-                    // Se não houver, mostra o slot livre (verde)
+                    // Se não houver, mostra o slot livre
                     <div
-                      className="bg-green-100 h-16 border border-gray-200 rounded-md hover:bg-green-200 cursor-pointer transition-colors"
+                      className="bg-[#80A9D2] h-16 border border-transparent rounded-md hover:bg-[#6c98c1] cursor-pointer transition-colors"
                       onClick={() => handleSlotClick(day, hour)}
                     ></div>
                   )}
