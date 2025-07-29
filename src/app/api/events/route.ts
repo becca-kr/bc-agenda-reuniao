@@ -8,6 +8,13 @@ interface Booking {
   title: string;
 }
 
+// Definição do tipo DeletePayload
+type DeletePayload = {
+  day: string;
+  hour: string;
+};
+
+// Definição do tipo RequestBody
 type RequestBody =
   | { action: 'CREATE'; payload: Booking }
   | { action: 'DELETE'; payload: DeletePayload };
