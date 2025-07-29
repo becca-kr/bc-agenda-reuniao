@@ -1,12 +1,19 @@
 import { kv } from '@vercel/kv';
 import { NextResponse } from 'next/server';
 
+// Definição do tipo Booking
+interface Booking {
+  day: string;
+  hour: string;
+  title: string;
+}
+
 // Função GET: Para buscar todos os agendamentos
 export async function GET() {
   try {
-    const bookings = await kv.get('bookings');
+    const bookings = await kv.get<Booking[]>('bookings');
     return NextResponse.json(bookings || []);
-  } catch (error) {
+  } catch {
     return new NextResponse('Erro ao buscar agendamentos', { status: 500 });
   }
 }
