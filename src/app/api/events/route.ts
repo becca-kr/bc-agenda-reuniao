@@ -11,7 +11,7 @@ interface Booking {
 // Função GET: Para buscar todos os agendamentos
 export async function GET() {
   try {
-    const bookings = await kv.get<Booking[]>('bookings');
+    const bookings = (await kv.get('bookings')) as Booking[] | null;
     return NextResponse.json(bookings || []);
   } catch {
     return new NextResponse('Erro ao buscar agendamentos', { status: 500 });
